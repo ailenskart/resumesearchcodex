@@ -1,0 +1,32 @@
+version: '3.9'
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: resumes
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  api:
+    image: python:3.11-slim
+    working_dir: /app
+    volumes:
+      - ./:/app
+    environment:
+      DATABASE_URL: postgresql+psycopg2://postgres:postgres@db:5432/resumes
+      DRIVE_FOLDER_ID: "[DRIVE_FOLDER_ID]"
+      DRIVE_AUTH_METHOD: "SERVICE_ACCOUNT"
+      EMBEDDING_PROVIDER: "LOCAL_SENTENCE_TRANSFORMERS"
+      VECTOR_BACKEND: "PGVECTOR"
+    depends_on:
+      - db
+    command: bash -lc "pip install -r requirements.txt && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    ports:
+      - "8000:8000"
+
+volumes:
+  pgdata:
