@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: resumesearch-api
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: resumesearch-db
+          property: connectionString
+      - key: DRIVE_FOLDER_ID
+        value: "[DRIVE_FOLDER_ID]"
+      - key: DRIVE_AUTH_METHOD
+        value: "SERVICE_ACCOUNT"
+      - key: EMBEDDING_PROVIDER
+        value: "LOCAL_SENTENCE_TRANSFORMERS"
+      - key: VECTOR_BACKEND
+        value: "PGVECTOR"
+
+databases:
+  - name: resumesearch-db
+    plan: starter
